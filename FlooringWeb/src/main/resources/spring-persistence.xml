@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                           http://www.springframework.org/schema/tx 
+                           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"> 
+
+    <tx:annotation-driven />      <!--telling Spring to pay attention to database annotations-->
+    
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/flooring" />
+        <property name="username" value="root" />
+        <property name="password" value="apprentice" />
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="10" />
+        
+    </bean>
+    
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+<!--    <bean id="productsReadWrite" class="com.mycompany.flooringweb.dao.ProductsReadWrite">
+    </bean>-->
+    
+    <bean id="productsDao" class="com.mycompany.flooringweb.dao.ProductsDaoDbImpl">
+        <constructor-arg ref="jdbcTemplate" />
+<!--        <constructor-arg ref="productsReadWrite" />      -->
+    </bean>
+
+    <bean id="taxesDao" class="com.mycompany.flooringweb.dao.TaxesDaoDbImpl">
+        <constructor-arg ref="jdbcTemplate" />
+    </bean>
+        
+    <bean id="ordersDao" class="com.mycompany.flooringweb.dao.OrdersDaoDbImpl">
+        <constructor-arg ref="jdbcTemplate" />
+    </bean>
+    
+    <bean id="auditDao" class="com.mycompany.flooringweb.dao.AuditDaoDbImpl">
+        <constructor-arg ref="jdbcTemplate" />
+    </bean>
+    
+    <bean id="homeController" class="com.mycompany.flooringweb.controller.HomeController">
+        <constructor-arg ref="ordersDao"/>
+        <constructor-arg ref="productsDao"/>
+        <constructor-arg ref="taxesDao"/>
+        <constructor-arg ref="auditDao"/>
+        
+    </bean>
+    
+    
+    <bean id="orderController" class="com.mycompany.flooringweb.controller.OrderController">
+        <constructor-arg ref="ordersDao"/>
+        <constructor-arg ref="productsDao"/>
+        <constructor-arg ref="taxesDao"/>
+        <constructor-arg ref="auditDao"/>
+        
+    </bean>
+    
+    <bean id="adminController" class="com.mycompany.flooringweb.controller.AdminController">
+        <constructor-arg ref="productsDao"/>
+        <constructor-arg ref="taxesDao"/>
+    
+    </bean>
+    
+    <!--beans for writing to text files-->
+<!--    <bean id="productsDao" class="com.mycompany.flooringweb.dao.ProductsDaoImpl">
+        <constructor-arg value="textFiles/products.txt" />
+        <constructor-arg ref="productsReadWrite" />      
+    </bean>
+
+    <bean id="taxesDao" class="com.mycompany.flooringweb.dao.TaxesDaoImpl">
+        <constructor-arg value="textFiles/taxes.txt" />
+    </bean>
+        
+    <bean id="ordersDao" class="com.mycompany.flooringweb.dao.OrdersDaoImpl">
+        <constructor-arg value="textFiles/orders" />
+    </bean>
+    
+    <bean id="auditDao" class="com.mycompany.flooringweb.dao.AuditDaoImpl">
+        <constructor-arg value="textFiles/audits.txt" />
+    </bean>-->
+    
+</beans>
